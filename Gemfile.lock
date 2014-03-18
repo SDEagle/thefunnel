@@ -1,0 +1,53 @@
+GIT
+  remote: git://github.com/rspec/rspec-core.git
+  revision: 184b02c7673b61588129bad268eb0847bae5243a
+  specs:
+    rspec-core (3.0.0.beta2)
+      rspec-support (= 3.0.0.beta2)
+
+GIT
+  remote: git://github.com/rspec/rspec-expectations.git
+  revision: 704ded93edb64fe69741de58aeb44f2d677d4408
+  specs:
+    rspec-expectations (3.0.0.beta2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (= 3.0.0.beta2)
+
+GIT
+  remote: git://github.com/rspec/rspec-mocks.git
+  revision: 4718858320067115fcb57fffcfc8e286a3a9e5e8
+  specs:
+    rspec-mocks (3.0.0.beta2)
+      rspec-support (= 3.0.0.beta2)
+
+GIT
+  remote: git://github.com/rspec/rspec-support.git
+  revision: 9170670133b26196feb85f58988af706c85a5574
+  specs:
+    rspec-support (3.0.0.beta2)
+
+GIT
+  remote: git://github.com/rspec/rspec.git
+  revision: 35343500981f0a0a56d843d2b95fb9dd938a8038
+  specs:
+    rspec (3.0.0.beta2)
+      rspec-core (= 3.0.0.beta2)
+      rspec-expectations (= 3.0.0.beta2)
+      rspec-mocks (= 3.0.0.beta2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    colorize (0.7.0)
+    diff-lcs (1.2.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  colorize
+  rspec!
+  rspec-core!
+  rspec-expectations!
+  rspec-mocks!
+  rspec-support!
