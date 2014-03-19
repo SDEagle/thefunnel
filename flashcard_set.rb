@@ -6,7 +6,6 @@ class FlashcardSet
 	end
 
 	def add_question *args
-		@tickets_per_box = nil
 		@boxes[0] << Question.new(*args)
 	end
 
@@ -37,7 +36,7 @@ private
 	end
 
 	def tickets_per_box
-		@tickets_per_box ||= @boxes.each_with_index.map { |box, index| box.size * tickets_per_question(index) }
+		@boxes.each_with_index.map { |box, index| box.size * tickets_per_question(index) }
 	end
 
 	def tickets_per_question box_index
