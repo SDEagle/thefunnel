@@ -5,10 +5,8 @@ class Parser
 		expected_depth = 0
 		heading_context = []
 		current_heading_level = 0
-		i = 0
 
 		lines.each do |line|
-			puts i+=1
 			depth, items = analyze_line(line)
 
 			items.each do |item|
@@ -58,9 +56,6 @@ class Parser
 	end
 
 	def self.construct_question heading_context, question_context, question
-		unless question[:question]
-			puts "Headers", heading_context.to_s, "Questions", question_context.to_s, "Question", question.to_s
-		end
 		q = ""
 		q << "# #{heading_context.join ' # '} - " unless heading_context.empty?
 		q << "#{question_context.map {|q| q[:question]}.join ' - '} - " unless question_context.empty?
