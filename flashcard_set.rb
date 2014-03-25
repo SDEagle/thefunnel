@@ -18,7 +18,7 @@ class FlashcardSet
 		else 
 			question.wrong_answer!
 		end
-		@boxes[question.correct_streak] << question
+		@boxes[question.correct_streak + 1] << question
 	end
 
 	def questions_in_box
