@@ -19,16 +19,24 @@ class FlashcardSet
 
 		if yield(*question.ask!)
 			question.correct_answer!
-			@boxes[question.box_position] ||= []
 		else 
 			question.wrong_answer!
 		end
-		
+
+		@boxes[question.box_position] ||= []
 		@boxes[question.box_position] << question
 	end
 
 	def questions_in_box
 		@boxes.map(&:size)
+	end
+
+	def total_questions
+		questions_in_box.inject 0, &:+
+	end
+
+	def to_s
+		"Number of questions: #{total_questions} - in boxes: #{questions_in_box.to_s}"
 	end
 
 private
