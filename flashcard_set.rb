@@ -9,16 +9,22 @@ class FlashcardSet
 		@boxes[0] << Question.new(*args)
 	end
 
+	def clean
+		@boxes = @boxes.flatten.uniq.group_by { |q| q.box_position }
+	end
+
 	def ask
 		question = random_question
-		@boxes[question.correct_streak].delete(question)
+		@boxes[question.box_position].delete(question)
+
 		if yield(*question.ask!)
 			question.correct_answer!
-			@boxes[question.correct_streak] ||= []
+			@boxes[question.box_position] ||= []
 		else 
 			question.wrong_answer!
 		end
-		@boxes[question.correct_streak + 1] << question
+		
+		@boxes[question.box_position] << question
 	end
 
 	def questions_in_box

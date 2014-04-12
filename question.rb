@@ -30,4 +30,8 @@ class Question
 	def wrong_answer!
 		@correct_streak = 0
 	end
+
+	def box_position
+		times_asked == 0 ? 0 : correct_streak + 1
+	end
 end
