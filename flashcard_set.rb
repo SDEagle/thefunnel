@@ -13,8 +13,12 @@ class FlashcardSet
 		@boxes = @boxes.flatten.uniq.group_by { |q| q.box_position }
 	end
 
-	def ask
+	def ask topic = []
 		question = random_question
+		while !question.is_in_topic? topic
+			question = random_question
+		end
+
 		@boxes[question.box_position].delete(question)
 
 		if yield(*question.ask!)
@@ -35,11 +39,19 @@ class FlashcardSet
 		questions_in_box.inject 0, &:+
 	end
 
+	def topics
+		questions.map { |question| question.topic }.uniq
+	end
+
 	def to_s
 		"Number of questions: #{total_questions} - in boxes: #{questions_in_box.to_s}"
 	end
 
 private
+
+	def questions
+		@boxes.flatten
+	end
 	
 	def random_question
 		ticket_to_question(rand(ticket_count))

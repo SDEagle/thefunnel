@@ -56,10 +56,6 @@ class Parser
 	end
 
 	def self.construct_question heading_context, question_context, question
-		q = ""
-		q << "# #{heading_context.join ' # '} - " unless heading_context.empty?
-		q << "#{question_context.map {|q| q[:question]}.join ' - '} - " unless question_context.empty?
-		q << question[:question]
-		return q, question[:answers]
+		return question[:question], question_context.map { |q| q[:question] }, heading_context.clone, question[:answers]
 	end
 end
