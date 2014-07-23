@@ -5,8 +5,8 @@ class FlashcardSet
 		@boxes = [[]]
 	end
 
-	def add_question *args
-		@boxes[0] << Question.new(*args)
+	def add_question question
+		@boxes[0] << question
 	end
 
 	def clean
@@ -41,6 +41,12 @@ class FlashcardSet
 
 	def topics
 		questions.map { |question| question.topic }.uniq
+	end
+
+	def remove_topic topic
+		@boxes.each do |box|
+			box.reject! { |question| question.is_in_topic? topic }
+		end
 	end
 
 	def to_s

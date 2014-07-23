@@ -1,17 +1,23 @@
 class Parser
 
-	def self.parse lines, flashcard_set
-		context = []
+	def initialize lines, flashcard_set, topic = []
+		@lines = lines
+		@flashcard_set = flashcard_set
+		@topic = topic
+	end
+
+	def parse
+		@context = []
 		expected_depth = 0
-		heading_context = []
+		@heading_context = []
 		current_heading_level = 0
 
-		lines.each do |line|
+		@lines.each do |line|
 			depth, items = analyze_line(line)
 
 			items.each do |item|
 				while depth < expected_depth
-					flashcard_set.add_question(*construct_question(heading_context, context, context.pop))
+					add_question!
 					expected_depth -= 1
 				end
 
@@ -19,43 +25,45 @@ class Parser
 					heading_level = item[:type].size
 
 					if heading_level <= current_heading_level
-						heading_context.pop(current_heading_level - heading_level + 1)
+						@heading_context.pop(current_heading_level - heading_level + 1)
 					end
-					heading_context << item[:text]
+					@heading_context << item[:text]
 					current_heading_level = heading_level
 				else
 					if item[:type] =~ /(!|\*)/
-						context[-1][:answers] << item[:text]
+						@context[-1][:answers] << item[:text]
 					end
 					if item[:type] =~ /(\?|\*)/
-						context << { question: item[:text], answers: [] }
+						@context << { question: item[:text], answers: [] }
 						expected_depth = depth + 1
 					end	
 				end
 			end
 		end
 
-		while !context.empty?
-			flashcard_set.add_question(*construct_question(heading_context, context, context.pop))
+		while !@context.empty?
+			add_question!
 		end
 	end
 
-	def self.analyze_line line
+	def analyze_line line
 		items = split_into_items(line.lstrip).map do |item|  
 			Hash[[:type, :text].zip item.split(/\s/, 2)]
 		end
 		return depth(line), items
 	end
 
-	def self.depth line
+	def depth line
 		line.gsub("\t", '    ')[/\A */].size / 4
 	end
 
-	def self.split_into_items line
+	def split_into_items line
 		line.scan(/(([!\*\?]|(?<!#)#+)[^!\*\?#]*)/).map { |item| item[0].strip }
 	end
 
-	def self.construct_question heading_context, question_context, question
-		return question[:question], question_context.map { |q| q[:question] }, heading_context.clone, question[:answers]
+	def add_question!
+		question_data = @context.pop
+		question = Question.new question_data[:question], @context.map { |q| q[:question] }, @heading_context.clone, question_data[:answers]
+		@flashcard_set.add_question question if question.is_in_topic? @topic
 	end
 end

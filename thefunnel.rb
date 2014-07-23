@@ -12,7 +12,7 @@ cardset ||= FlashcardSet.new
 
 if ARGV[1] == 'add'
 	puts "before:", cardset.to_s
-	Parser.parse File.open(ARGV[2]), cardset
+	Parser.new(File.open(ARGV[2]), cardset).parse
 	puts "after:", cardset.to_s
 elsif ARGV[1] == 'ask'
 	old = cardset.to_s
@@ -55,6 +55,19 @@ elsif ARGV[1] == 'ask_topic'
 
 	puts "Your Flashcard Box:", "Before:", old, "Now:", cardset.to_s, "Goodbye"
 	raise 'Broken card moves' unless question_count == cardset.total_questions
+elsif ARGV[1] == 'update_topic'
+	puts "before:", cardset.to_s
+
+	puts "Choose a topic (by index)"
+	topics = cardset.topics.sort
+	topics.each_with_index do |topic, i|
+		puts "#{i}: #{topic.join ' - '}"
+	end
+	topic = topics[$stdin.gets.chomp.to_i]
+
+	cardset.remove_topic topic
+	Parser.new(File.open(ARGV[2]), cardset, topic).parse
+	puts "after:", cardset.to_s
 end
 
 store.transaction do
