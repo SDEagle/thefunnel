@@ -32,16 +32,16 @@ elsif ARGV[1] == 'ask'
 	puts "Your Flashcard Box:", "Before:", old, "Now:", cardset.to_s, "Goodbye"
 	raise 'Broken card moves' unless question_count == cardset.total_questions
 elsif ARGV[1] == 'ask_topic'
-	old = cardset.to_s
-	puts "Welcome!", "Your Flashcard Box:", old
-	question_count = cardset.total_questions
-
 	puts "Choose a topic (by index)"
 	topics = cardset.topics.sort
 	topics.each_with_index do |topic, i|
 		puts "#{i}: #{topic.join ' - '}"
 	end
 	topic = topics[$stdin.gets.chomp.to_i]
+
+	old = cardset.topic_stats topic
+	puts "Welcome!", "Your Flashcard Box:", old
+	question_count = cardset.total_questions
 
 	(ARGV[2] || 10).to_i.times do 
 		cardset.ask(topic) do |question, answers, number_of_answers|
@@ -53,7 +53,7 @@ elsif ARGV[1] == 'ask_topic'
 		end
 	end
 
-	puts "Your Flashcard Box:", "Before:", old, "Now:", cardset.to_s, "Goodbye"
+	puts "Your Flashcard Box:", "Before:", old, "Now:", cardset.topic_stats(topic), "Goodbye"
 	raise 'Broken card moves' unless question_count == cardset.total_questions
 elsif ARGV[1] == 'update_topic'
 	puts "before:", cardset.to_s

@@ -31,16 +31,16 @@ class FlashcardSet
 		@boxes[question.box_position] << question
 	end
 
-	def questions_in_box
-		@boxes.map(&:size)
-	end
-
-	def total_questions
-		questions_in_box.inject 0, &:+
-	end
-
 	def topics
 		questions.map { |question| question.topic }.uniq
+	end
+
+	def questions_in_box topic = []
+		filtered_boxes(topic).map &:size
+	end
+
+	def total_questions topic = []
+		questions_in_box(topic).inject 0, &:+
 	end
 
 	def remove_topic topic
@@ -49,11 +49,19 @@ class FlashcardSet
 		end
 	end
 
+	def topic_stats topic = []
+		"Total Number of questions: #{total_questions(topic)} - in boxes: #{questions_in_box(topic).to_s}"
+	end
+
 	def to_s
-		"Number of questions: #{total_questions} - in boxes: #{questions_in_box.to_s}"
+		topic_stats
 	end
 
 private
+
+	def filtered_boxes topic = []
+		@boxes.map { |box| box.reject { |q| !q.is_in_topic? topic } }
+	end
 
 	def questions
 		@boxes.flatten
