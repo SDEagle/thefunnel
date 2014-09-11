@@ -1,7 +1,8 @@
 class Question
-	attr_reader :times_asked, :correct_streak, :topic
+	attr_reader :times_asked, :correct_streak, :topic, :ordered
+	alias_method :ordered?, :ordered
 
-	def initialize question, question_context, topic, answers, ordered = false
+	def initialize question, question_context = [], topic = [], answers = [], ordered = false
 		@question = question
 		@question_context = question_context
 		@topic = topic
@@ -18,13 +19,9 @@ class Question
 
 	def question
 		q = ""
-		q << @topic.map { |heading| "# #{heading}" }.join(' ') << ' - '
+		q << @topic.map { |heading| "# #{heading}" }.join(' ') << ' - ' unless @topic == []
 		q << @question_context.map { |question| "#{question} - " }.join('')
 		q << @question
-	end
-
-	def ordered?
-		@ordered
 	end
 
 	def is_in_topic? topic
@@ -51,6 +48,7 @@ class Question
 	def == other, ignore_stats = false
 		question == other.question &&
 		answers == other.answers &&
+		ordered? == other.ordered? &&
 		(ignore_stats || (times_asked == other.times_asked && correct_streak == other.correct_streak))
 	end
 end
