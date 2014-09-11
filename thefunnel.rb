@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
-require 'pstore'
+require 'yaml/store'
 require 'colorize'
 require_relative 'flashcard_set'
 require_relative 'parser'
 
-store = PStore.new ARGV[0]
+store = YAML::Store.new ARGV[0]
 
 cardset = store.transaction(true) { store[:cardset] }
 cardset ||= FlashcardSet.new

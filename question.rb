@@ -47,4 +47,10 @@ class Question
 	def box_position
 		times_asked == 0 ? 0 : correct_streak + 1
 	end
+
+	def == other, ignore_stats = false
+		question == other.question &&
+		answers == other.answers &&
+		(ignore_stats || (times_asked == other.times_asked && correct_streak == other.correct_streak))
+	end
 end

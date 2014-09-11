@@ -1,5 +1,6 @@
-class Parser
+require_relative 'question.rb'
 
+class Parser
 	def initialize lines, flashcard_set, topic = []
 		@lines = lines
 		@flashcard_set = flashcard_set
