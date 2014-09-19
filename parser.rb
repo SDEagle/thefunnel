@@ -1,13 +1,11 @@
 require_relative 'question'
 
 class Parser
-	def initialize lines, flashcard_set, topic = []
+	def initialize lines
 		@lines = lines
-		@flashcard_set = flashcard_set
-		@topic = topic
 	end
 
-	def parse
+	def parse(&block)
 		@context = []
 		expected_depth = 0
 		@heading_context = []
@@ -18,7 +16,7 @@ class Parser
 
 			items.each do |item|
 				while depth < expected_depth
-					add_question!
+					add_question!(&block)
 					expected_depth -= 1
 				end
 
@@ -43,7 +41,7 @@ class Parser
 		end
 
 		while !@context.empty?
-			add_question!
+			add_question!(&block)
 		end
 	end
 
@@ -65,6 +63,6 @@ class Parser
 	def add_question!
 		question_data = @context.pop
 		question = Question.new question_data[:question], @context.map { |q| q[:question] }, @heading_context.clone, question_data[:answers]
-		@flashcard_set.add_question question if question.is_in_topic? @topic
+		yield question
 	end
 end

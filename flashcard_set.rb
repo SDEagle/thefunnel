@@ -14,9 +14,8 @@ class FlashcardSet
 	end
 
 	def ask topic = []
-		question = random_question
-		while !question.is_in_topic? topic
-			question = random_question
+		question = loop do
+			break q if (q = random_question).is_in_topic? topic
 		end
 
 		@boxes[question.box_position].delete(question)

@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 require_relative '../parser'
 
 describe Parser do
-	let (:parser) { Parser.new '', nil }
+	let (:parser) { Parser.new '' }
 
 	describe '#depth' do
 		it 'interprets 4 spaces as a depth of one' do
@@ -49,22 +49,17 @@ describe Parser do
 
 	describe '::parse' do
 		it 'creates questions' do
-			flashcards = double()
-			expect(flashcards).to receive(:add_question).with(Question.new('What ist the answer', [], ['Topic'], ['42']))
-			Parser.new("# Topic\n? What ist the answer\n\t! 42".each_line, flashcards).parse
+			expect { |b| Parser.new("# Topic\n? What ist the answer\n\t! 42".each_line).parse(&b) }.to yield_successive_args(Question.new('What ist the answer', [], ['Topic'], ['42']))
 		end
 
 		it 'parses multiple answers in one line' do
-			flashcards = double()
-			expect(flashcards).to receive(:add_question).with(Question.new('What ist the answer', [], ['Topic'], ['42', '23']))
-			Parser.new("# Topic\n? What ist the answer\n\t! 42 ! 23".each_line, flashcards).parse
+			expect { |b| Parser.new("# Topic\n? What ist the answer\n\t! 42 ! 23".each_line).parse(&b) }.to yield_successive_args(Question.new('What ist the answer', [], ['Topic'], ['42', '23']))
 		end
 
 		it 'parses questions without answers' do
-			flashcards = double()
-			expect(flashcards).to receive(:add_question).with(Question.new('What ist the answer', [], ['Topic'], ['42']))
-			expect(flashcards).to receive(:add_question).with(Question.new('42', ['What ist the answer'], ['Topic'], []))
-			Parser.new("# Topic\n? What ist the answer\n\t* 42".each_line, flashcards).parse
+			expect { |b| Parser.new("# Topic\n? What ist the answer\n\t* 42".each_line).parse(&b) }.to yield_successive_args(
+				Question.new('42', ['What ist the answer'], ['Topic'], []),
+				Question.new('What ist the answer', [], ['Topic'], ['42']))
 		end
 
 		it 'continues with answers for higher level question after low level question is finished' do
@@ -73,10 +68,9 @@ describe Parser do
 	* Subquestion
 		! Subanswer
 	! Answer"
-			flashcards = double()
-			expect(flashcards).to receive(:add_question).with(Question.new('Question', [], ['Topic'], ['Subquestion', 'Answer']))
-			expect(flashcards).to receive(:add_question).with(Question.new('Subquestion', ['Question'], ['Topic'], ['Subanswer']))
-			Parser.new(text.each_line, flashcards).parse
+			expect { |b| Parser.new(text.each_line).parse(&b) }.to yield_successive_args(
+				Question.new('Subquestion', ['Question'], ['Topic'], ['Subanswer']),
+				Question.new('Question', [], ['Topic'], ['Subquestion', 'Answer']))
 		end
 	end
 end

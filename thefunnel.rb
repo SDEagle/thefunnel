@@ -24,7 +24,9 @@ end
 
 if ARGV[1] == 'add'
 	puts "before:", cardset.to_s
-	Parser.new(File.open(ARGV[2]), cardset).parse
+	Parser.new(File.open(ARGV[2])).parse do |question|
+		cardset.add_question question
+	end
 	puts "after:", cardset.to_s
 elsif ARGV[1] == 'ask'
 	topic = select_topic cardset.topics
@@ -49,7 +51,9 @@ elsif ARGV[1] == 'update'
 	topic = select_topic cardset.topics
 
 	cardset.remove_topic topic
-	Parser.new(File.open(ARGV[2]), cardset, topic).parse
+	Parser.new(File.open(ARGV[2]), cardset, topic).parse do |question|
+		cardset.add_question question if question.is_in_topic? topic
+	end
 	puts "after:", cardset.to_s
 elsif ARGV[1] == 'stats'
 	topic = select_topic cardset.topics	
