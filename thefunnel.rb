@@ -22,12 +22,11 @@ def select_topic topics
 	topics[selection.to_i - 1]
 end
 
-if ARGV[1] == 'add'
+if ARGV[1] == 'add' || ARGV[1] == 'update'
 	puts "before:", cardset.to_s
-	Parser.new(File.open(ARGV[2])).parse do |question|
-		cardset.add_question question
-	end
+	cardset.update Parser.new(File.open(ARGV[2]))
 	puts "after:", cardset.to_s
+
 elsif ARGV[1] == 'ask'
 	topic = select_topic cardset.topics
 	old = cardset.topic_stats topic
@@ -46,15 +45,7 @@ elsif ARGV[1] == 'ask'
 
 	puts "Your Flashcard Box:", "Before:", old, "Now:", cardset.topic_stats(topic), "Goodbye"
 	raise 'Broken card moves' unless question_count == cardset.total_questions
-elsif ARGV[1] == 'update'
-	puts "before:", cardset.to_s
-	topic = select_topic cardset.topics
-
-	cardset.remove_topic topic
-	Parser.new(File.open(ARGV[2]), cardset, topic).parse do |question|
-		cardset.add_question question if question.is_in_topic? topic
-	end
-	puts "after:", cardset.to_s
+	
 elsif ARGV[1] == 'stats'
 	topic = select_topic cardset.topics	
 	puts cardset.topic_stats topic

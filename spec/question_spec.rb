@@ -73,4 +73,11 @@ describe Question do
 			expect(question.is_in_topic? ['Topic', 'Subtopic']).to be_falsy
 		end
 	end
+
+	it 'does not use stats for hash key generation' do
+		q1 = Question.new 'foo'
+		q2 = Question.new 'foo'
+		q1.correct_answer!
+		expect(q1.hash == q2.hash).to be_truthy
+	end
 end

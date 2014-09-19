@@ -1,3 +1,4 @@
+require 'set'
 require_relative 'question'
 
 class FlashcardSet
@@ -6,18 +7,11 @@ class FlashcardSet
 	end
 
 	def add_question question
-		@boxes[0] << question
-	end
-
-	def clean
-		@boxes = @boxes.flatten.uniq.group_by { |q| q.box_position }
+		@boxes[0] << question unless contains? question
 	end
 
 	def ask topic = []
-		question = loop do
-			break q if (q = random_question).is_in_topic? topic
-		end
-
+		question = random_question topic
 		@boxes[question.box_position].delete(question)
 
 		if yield(*question.ask!)
@@ -26,8 +20,7 @@ class FlashcardSet
 			question.wrong_answer!
 		end
 
-		@boxes[question.box_position] ||= []
-		@boxes[question.box_position] << question
+		sort_in question
 	end
 
 	def topics
@@ -42,12 +35,6 @@ class FlashcardSet
 		questions_in_box(topic).inject 0, &:+
 	end
 
-	def remove_topic topic
-		@boxes.each do |box|
-			box.reject! { |question| question.is_in_topic? topic }
-		end
-	end
-
 	def topic_stats topic = []
 		"Total Number of questions: #{total_questions(topic)} - in boxes: #{questions_in_box(topic).to_s}"
 	end
@@ -56,7 +43,26 @@ class FlashcardSet
 		topic_stats
 	end
 
+	def contains? question
+		@boxes.any? { |box| box.any? { |q| q.== question, true } }
+	end
+
+	def update parser
+		current_questions = Set.new
+		parser.parse do |question|
+			add_question question
+			current_questions.add question
+		end
+		@boxes.each { |box| box.reject! { |question| !current_questions.include? question } }
+	end
+
 private
+
+	def sort_in question
+		@boxes[question.box_position] ||= []
+		@boxes[question.box_position] << question
+		@boxes.map! { |box| box ? box : [] }
+	end
 
 	def filtered_boxes topic = []
 		@boxes.map { |box| box.reject { |q| !q.is_in_topic? topic } }
@@ -66,8 +72,11 @@ private
 		@boxes.flatten
 	end
 	
-	def random_question
-		ticket_to_question(rand(ticket_count))
+	def random_question topic = []
+		loop do
+			question = ticket_to_question(rand(ticket_count))
+			return question if question.is_in_topic? topic			
+		end
 	end
 
 	def ticket_count

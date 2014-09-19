@@ -51,4 +51,14 @@ class Question
 		ordered? == other.ordered? &&
 		(ignore_stats || (times_asked == other.times_asked && correct_streak == other.correct_streak))
 	end
+
+	def hash
+		h = question.hash
+		h = 31 * h + answers.hash
+		h = 31 * h + ordered.hash
+	end
+
+	def eql? other
+		self.== other, true
+	end
 end
