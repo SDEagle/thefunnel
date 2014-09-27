@@ -39,6 +39,11 @@ describe Parser do
 			expect(items).to match(['* foo', '? bar', '## bla bla', '! 14', '!2 nothing'])
 		end
 
+		it 'recognizes if there is no space before *' do
+			items = parser.split_into_items '! 14*2'
+			expect(items).to match(['! 14*2'])
+		end
+
 		it 'does not include unknown lines' do
 			items = parser.split_into_items 'bla bla * foo'
 			expect(items).to eq(['* foo'])

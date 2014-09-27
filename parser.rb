@@ -57,7 +57,7 @@ class Parser
 	end
 
 	def split_into_items line
-		line.scan(/(([!\*\?]|(?<!#)#+)[^!\*\?#]*)/).map { |item| item[0].strip }
+		line.scan(/((\A|\s)([!\*\?]|(?<!#)#+)(\S|\s(?![!\*\?#]))*)/).map { |item| item[0].strip }
 	end
 
 	def add_question!
